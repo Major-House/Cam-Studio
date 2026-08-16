@@ -1,0 +1,73 @@
+name: Build and deploy Flutter web
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: stable
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build Flutter web (release)
+        run: flutter build web --release
+
+      - name: Deploy to render-static branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          BUILD_DIR=build/web
+
+          if [ ! -d "$BUILD_DIR" ]; then
+            echo "Build output not found: $BUILD_DIR"
+            exit 1
+          fi
+
+          # Create or switch to orphan branch render-static
+          if git show-ref --verify --quiet refs/heads/render-static; then
+            git switch render-static
+            git rm -rf --quiet .
+          else
+            git switch --orphan render-static
+            git rm -rf --quiet .
+          fi
+
+          # Copy build artifacts
+          cp -a "$BUILD_DIR"/. .
+
+          # Ensure .nojekyll so GitHub Pages serves files starting with underscore
+          touch .nojekyll
+
+          git add --all
+          if git diff --staged --quiet; then
+            echo "No changes to publish"
+            exit 0
+          fi
+
+          git commit -m "Publish Flutter web build from ${{ github.sha }}"
+
+          # Push using token-authenticated HTTPS
+          git push --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git" render-static
