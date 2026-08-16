@@ -1,0 +1,17 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    prefer_const_constructors: true
+    prefer_const_literals_to_create_immutables: true
+    avoid_print: true
+    prefer_final_fields: true
+    prefer_single_quotes: true
+    sized_box_for_whitespace: true
+    use_key_in_widget_constructors: true
+
+analyzer:
+  errors:
+    invalid_use_of_visible_for_testing_member: error
+  exclude:
+    - '**/*.g.dart'

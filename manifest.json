@@ -1,0 +1,11 @@
+{
+  "name": "Hollywood Studio Pro",
+  "short_name": "Studio Pro",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#070710",
+  "theme_color": "#FFBF00",
+  "description": "Professional face-swap, streaming and editing studio",
+  "orientation": "landscape-primary",
+  "icons": []
+}

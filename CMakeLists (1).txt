@@ -1,0 +1,4 @@
+# Endless Cam / Studio — Linux
+# Generate full project with: flutter create . --platforms=linux
+cmake_minimum_required(VERSION 3.13)
+project(endless_cam_studio LANGUAGES CXX)

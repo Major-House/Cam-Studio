@@ -1,0 +1,35 @@
+name: endless_cam_studio
+description: Endless virtual camera and studio for all OS — Virtual Cam, WebRTC, RTMP+NVENC.
+publish_to: 'none'
+version: 3.1.0+2
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+  flutter: '>=3.16.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  camera: ^0.11.0+2
+  camera_windows: ^0.2.5
+  path_provider: ^2.1.4
+  path: ^1.9.0
+  permission_handler: ^11.3.1
+  provider: ^6.1.2
+  http: ^1.2.2
+  web_socket_channel: ^3.0.1
+  image: ^4.2.0
+  uuid: ^4.4.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/branding/
+    - assets/branding/endless_cam_studio_logo.jpg
