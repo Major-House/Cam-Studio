@@ -43,8 +43,8 @@ app = Flask(__name__)
 def index():
     return jsonify({
         "ok": True,
-        "service": "Cam-Studio bridge",
-        "message": "Cam-Studio bridge API is running.",
+        "service": "ENDLESS CAM / Virtual Camera Bridge",
+        "message": "Virtual Camera Bridge service is running.",
         "routes": [
             "/health",
             "/frame",
@@ -52,8 +52,9 @@ def index():
             "/rtmp/frame",
             "/rtmp/stop",
             "/rtmp/stats",
+            "/obs/status",
         ],
-    })
+    }), 200
 
 
 # ── Virtual camera ──────────────────────────────────────────────────────────
@@ -971,13 +972,15 @@ def encode_capabilities():
 if __name__ == "__main__":
     t = threading.Thread(target=_idle_loop, daemon=True)
     t.start()
-    log.info("Bridge http://127.0.0.1:8766")
+    port = int(os.environ.get("PORT", "8766"))
+    host = os.environ.get("HOST", "0.0.0.0")
+    log.info("Bridge http://%s:%s", host, port)
     log.info("  Virtual cam: POST /frame  |  FFmpeg vcam: /vcam/ffmpeg/*  |  info: GET /vcam/info")
     log.info("  RTMP: /rtmp/start|frame|stop|stats")
     log.info("  OBS:  /obs/status|scenes|scene  (WebSocket %s:%s)", _OBS_HOST, _OBS_PORT)
     log.info("ffmpeg: %s", shutil.which("ffmpeg") or "NOT FOUND")
-    # threaded=True for concurrent /frame + /rtmp/frame; bind localhost only
     log.info("Low-latency mode: x264 zerolatency, short GOP, unbuffered pipes, drop-on-timeout clients")
+    app.run(host=host, port=port, debug=False, threaded=True)
     _host = os.environ.get("HOST", "0.0.0.0")
     _port = int(os.environ.get("PORT", "8766"))
     # Cloud (Render/Railway): HOST=0.0.0.0 PORT=$PORT
