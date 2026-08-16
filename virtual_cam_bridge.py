@@ -38,6 +38,24 @@ log = logging.getLogger("studio-bridge")
 
 app = Flask(__name__)
 
+
+@app.route("/", methods=["GET"])
+def index():
+    return jsonify({
+        "ok": True,
+        "service": "Cam-Studio bridge",
+        "message": "Cam-Studio bridge API is running.",
+        "routes": [
+            "/health",
+            "/frame",
+            "/rtmp/start",
+            "/rtmp/frame",
+            "/rtmp/stop",
+            "/rtmp/stats",
+        ],
+    })
+
+
 # ── Virtual camera ──────────────────────────────────────────────────────────
 _cam = None
 _cam_lock = threading.Lock()
@@ -960,7 +978,7 @@ if __name__ == "__main__":
     log.info("ffmpeg: %s", shutil.which("ffmpeg") or "NOT FOUND")
     # threaded=True for concurrent /frame + /rtmp/frame; bind localhost only
     log.info("Low-latency mode: x264 zerolatency, short GOP, unbuffered pipes, drop-on-timeout clients")
-    _host = os.environ.get("HOST", "127.0.0.1")
+    _host = os.environ.get("HOST", "0.0.0.0")
     _port = int(os.environ.get("PORT", "8766"))
     # Cloud (Render/Railway): HOST=0.0.0.0 PORT=$PORT
     app.run(host=_host, port=_port, threaded=True, processes=1)
