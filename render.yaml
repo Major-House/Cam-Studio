@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: cam-studio-backend
+    env: docker
+    repo: https://github.com/Major-House/Cam-Studio
+    branch: main
+    dockerfilePath: Dockerfile
+    plan: starter
+    autoDeploy: true
+    healthCheckPath: /
+
+  - type: web
+    name: cam-studio-frontend
+    env: docker
+    repo: https://github.com/Major-House/Cam-Studio
+    branch: main
+    dockerfilePath: docker/flutter.Dockerfile
+    plan: starter
+    autoDeploy: true
+    healthCheckPath: /
