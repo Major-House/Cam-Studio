@@ -1,15 +1,30 @@
-FROM python:3.12.14 AS builder
+FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
+
 WORKDIR /app
 
+# Install system deps and ffmpeg (required by many features)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    build-essential \
+    gcc \
+    libpq-dev \
+  && rm -rf /var/lib/apt/lists/*
 
-RUN python -m venv .venv
+# Install Python dependencies
 COPY requirements.txt ./
-RUN .venv/bin/pip install -r requirements.txt
-FROM python:3.12.14-slim
-WORKDIR /app
-COPY --from=builder /app/.venv .venv/
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application
 COPY . .
-CMD ["/app/.venv/bin/flask", "run", "--host=0.0.0.0", "--port=8080"]
+
+# Render / other hosts provide $PORT. Default to 10000 for local runs.
+ENV HOST=0.0.0.0
+ENV PORT=10000
+EXPOSE ${PORT}
+
+# Use the included entrypoint (originally in Procfile) which starts Flask and background threads.
+# Running python virtual_cam_bridge.py keeps the bridge idle loop and features that run only under __main__.
+CMD ["bash", "-lc", "python virtual_cam_bridge.py"]
